@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script type="text/javascript" src="js/lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/lib/underscore.js"></script>    
+    <script type="text/javascript" src="js/lib/backbone.js"></script>
+
+    <script type="text/javascript" src="js/time.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+  </head>
+
+  <body onload="updateClock(); setInterval('updateClock()', 1000);">    
+    <div id="clock"></div>
+
+    <div id="task-list"></div>
+
+    <div id="currently-doing">
+      <h2 id="currently-doing-heading">What I'm Doing...</h2>
+      <div id="currently-doing-inner">
+	
+      </div>
+    </div>    
+
+    
+    <script type="text/javascript" src="js/planner.js"></script>
+    
+    <script id="task-template" type="text/template">
+      <h4><%= title %></h4>
+      <p>ID: <%= id %></p>
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,32 @@
+body {
+    font-size:11px;
+}
+
+#task-list {
+    border:1px solid #ccc;
+    font-size:14px;
+    width:200px;
+    padding:30px;
+    float:left;
+}
+
+.single-task {
+    border:1px solid #ccc;
+    margin-bottom:20px;
+}
+
+#currently-doing {
+    float:left;
+    margin-left:60px;
+}
+
+#currently-doing-inner {
+    border:1px solid #ccc;
+    min-height:100px;
+    width:900px;
+}
+
+#clock {
+    font-size:14px;
+    margin-left:320px;
+}
