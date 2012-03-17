@@ -45,6 +45,9 @@
 	    }));
 	},
 
+	// This is to simulate that we're able to get a line where
+	// we can get the proper set of data that needs to be POSTed to
+	// assembla.
 	logEntryInfo: function() {
 	    console.log('Assembla Ticket ID: ' + this.get('ticket_id'));
 	    console.log('Time Entry Obj:');
@@ -61,7 +64,7 @@
 	className: 'single-task',
 	template: $('#task-template').html(),
 
-	render: function() {
+	render: function() {	   	    
 	    var tmpl = _.template("<%= title %> - <a href='#' class='do-task' data-ticket-id='<%= ticket_id %>' data-model-id='<%= id %>'>Do</a>");
 
 	    $(this.el).html(tmpl(this.model.toJSON()));
@@ -95,6 +98,11 @@
     });
 
     var tasks = new TaskListView();
+
+    // Nasty, can't figure out how to get model attrs in view attributes param
+    $('.single-task').each(function() {
+	$(this).attr('data-task-id', $(this).find('a:first-child').data('model-id'));
+    });
     
     // Clicking "Done" on an active task
     $('#currently-doing a.do-task').live('click', function() {
@@ -109,6 +117,19 @@
 
 	$(this).parent().startTask(task);
     });
+    
+    $('.time-entry-comment').live('keyup', function(e) {
+	// Blur on enter key
+	if (e.keyCode == 13) {
+	    // Get the model id, so we can set the comment on the tasks time entry obj
+	    var modelId = $(this).parent('.single-task').data('task-id');
+	    	    
+	    tasks.collection.get(modelId).get('time_entry').set('comment', $(this).val());
+
+	    $(this).blur();
+	}	    
+    });
+
 
     /**
       * Takes a taskModel, and adds the start_time attribute of the current time (unix timestamp format),
@@ -125,7 +146,9 @@
 	
 	// Aesthetics
 	$this.find('a').text('Done');
-	$('#currently-doing-inner').append('<div class="single-task">' + $this.html() + '</div>');
+	$this.append('<input type="text" name="comment" class="time-entry-comment" />');
+
+	$('#currently-doing-inner').append('<div class="single-task" data-task-id="' + taskModel.get('id') + '">' + $this.html() + '</div>');
 
 	$this.remove();
 
@@ -150,7 +173,8 @@
 	
 	// Aesthetics	
 	$this.find('a').text('Do');
-	$('#task-list').append('<div class="single-task">' + $this.html() + '</div>');
+	$this.find('.time-entry-comment').remove();
+	$('#task-list').append('<div class="single-task" data-task-id="' + taskModel.get('id') + '">' + $this.html() + '</div>');
 
 	$this.remove();
 
