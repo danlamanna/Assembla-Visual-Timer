@@ -23,7 +23,17 @@ body {
 #currently-doing-inner {
     border:1px solid #ccc;
     min-height:100px;
-    width:900px;
+    width:1000px;
+}
+
+#already-done {
+    float:right;
+}
+
+#already-done-inner {
+    border:1px solid #ccc;
+    width:300px;
+    min-height:200px;
 }
 
 #clock {

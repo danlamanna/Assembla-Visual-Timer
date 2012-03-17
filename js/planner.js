@@ -8,16 +8,20 @@
 	  ticket_id: '__ZSK6#11SA',
 	  title: "Sample Ticket 2" }];
 
-    var Task = Backbone.Model.extend({
+    var TimeEntry = Backbone.Model.extend({
+	defaults: {
+	    comment: '',
+	},
+
 	// Returns the difference of end_time and start_time attrs,
-	// also calls unsetTimeAttributes
-	taskDuration: function() {
+	// unsets start_time and end_time.
+	duration: function() {
 	    if (this.has('end_time') && this.has('start_time')) {		
-		var taskDuration = (this.get('end_time') - this.get('start_time'));
+		var duration = (this.get('end_time') - this.get('start_time'));
 
 		this.unsetTimeAttributes();
 
-		return taskDuration;
+		return duration;
 	    }
 	},
 
@@ -27,14 +31,24 @@
 	    this.unset('end_time');
 	    
 	    return this;
+	}
+    });
+
+    var TimeEntryList = Backbone.Collection.extend({
+	model: TimeEntry
+    });
+
+    var Task = Backbone.Model.extend({
+	initialize: function() {
+	    this.set('time_entry', new TimeEntry({
+		ticket_id: this.get('ticket_id')
+	    }));
 	},
 
-	logAssemblaInfo: function() {
-	    var assemblaInfo = 'Time entry to Assembla needs to be posted for Ticket ID';
-
-	    assemblaInfo += ' ' + this.get('ticket_id') + ' - duration of ' + secondsToHourlyDecimal(this.taskDuration());
-
-	    console.log(assemblaInfo);
+	logEntryInfo: function() {
+	    console.log('Assembla Ticket ID: ' + this.get('ticket_id'));
+	    console.log('Time Entry Obj:');
+	    console.log(this.get('time_entry').attributes);
 	}
     });
 
@@ -104,9 +118,10 @@
       **/
     $.fn.startTask = function(taskModel) {
 	var $this = $(this);
+	var timeEntry = taskModel.get('time_entry');
 	
 	// Model Attrs
-	taskModel.set('start_time', getUnixTimestamp());
+	timeEntry.set('start_time', getUnixTimestamp());
 	
 	// Aesthetics
 	$this.find('a').text('Done');
@@ -125,12 +140,13 @@
       **/
     $.fn.endTask = function(taskModel) {
 	var $this = $(this);
+	var timeEntry = taskModel.get('time_entry');
 
 	// Model Attrs
-	taskModel.set('end_time', getUnixTimestamp());
+	timeEntry.set('end_time', getUnixTimestamp());
 
 	// POST TO ASSEMBLA F'REALSIES
-	taskModel.logAssemblaInfo();	
+	taskModel.logEntryInfo();
 	
 	// Aesthetics	
 	$this.find('a').text('Do');
