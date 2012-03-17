@@ -103,54 +103,45 @@
     $('.single-task').each(function() {
 	$(this).attr('data-task-id', $(this).find('a:first-child').data('model-id'));
     });
-    
-    // Clicking "Done" on an active task
-    $('#currently-doing a.do-task').live('click', function() {
-	var task = tasks.collection.get($(this).data('model-id'));
 
-	$(this).parent().endTask(task);
-    });
-    
-    // Clicking "Do" on a task in the list
-    $('#task-list a.do-task').live('click', function() {
-	var task = tasks.collection.get($(this).data('model-id'));
+    $('.single-task').draggable({
+	containment: 'body',
+	revert: 'invalid',
 
-	$(this).parent().startTask(task);
-    });
-    
-    $('.time-entry-comment').live('keyup', function(e) {
-	// Blur on enter key
-	if (e.keyCode == 13) {
-	    // Get the model id, so we can set the comment on the tasks time entry obj
-	    var modelId = $(this).parent('.single-task').data('task-id');
-	    	    
-	    tasks.collection.get(modelId).get('time_entry').set('comment', $(this).val());
+	start: function() {
+	    $('.ui-droppable').css('border', '2px solid black');
+	},
 
-	    $(this).blur();
-	}	    
+	stop: function() {
+	    $('.ui-droppable').css('border', '1px solid #ccc');
+	}
     });
 
+    $('#currently-doing-inner').droppable({
+	// Dropping a task into the "What am I doing" box
+	drop: function(event, ui) {
+	    $(ui.draggable).startTask();
+	}
+    });
+
+    $('#task-list').droppable({
+	drop: function(event, ui) {
+	    $(ui.draggable).endTask();
+	}
+    });
 
     /**
-      * Takes a taskModel, and adds the start_time attribute of the current time (unix timestamp format),
+      * Adds the start_time attribute of the current time (unix timestamp format),
       * then moves the div into the div.#currently-doing-inner.
       * @calledon div.single-task
-      * @param {Backbone.Model} taskModel
       **/
-    $.fn.startTask = function(taskModel) {
-	var $this = $(this);
+    $.fn.startTask = function() {
+	var $this     = $(this);
+	var taskModel = tasks.collection.get($this.data('task-id'));
 	var timeEntry = taskModel.get('time_entry');
 	
 	// Model Attrs
 	timeEntry.set('start_time', getUnixTimestamp());
-	
-	// Aesthetics
-	$this.find('a').text('Done');
-	$this.append('<input type="text" name="comment" class="time-entry-comment" />');
-
-	$('#currently-doing-inner').append('<div class="single-task" data-task-id="' + taskModel.get('id') + '">' + $this.html() + '</div>');
-
-	$this.remove();
 
 	return this;
     };
@@ -159,10 +150,10 @@
       * Sets the end_time on the task model, gets the task duration,
       * moves the div back to its proper place on the task list.
       * @calledon div.single-task
-      * @param {Backbone.Model} taskModel
       **/
     $.fn.endTask = function(taskModel) {
 	var $this = $(this);
+	var taskModel = tasks.collection.get($this.data('task-id'));
 	var timeEntry = taskModel.get('time_entry');
 
 	// Model Attrs
@@ -170,13 +161,6 @@
 
 	// POST TO ASSEMBLA F'REALSIES
 	taskModel.logEntryInfo();
-	
-	// Aesthetics	
-	$this.find('a').text('Do');
-	$this.find('.time-entry-comment').remove();
-	$('#task-list').append('<div class="single-task" data-task-id="' + taskModel.get('id') + '">' + $this.html() + '</div>');
-
-	$this.remove();
 
 	return this;
     };
