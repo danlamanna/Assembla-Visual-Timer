@@ -38,14 +38,8 @@
 	}
     });
 
-    var TimeEntry = Backbone.Model.extend();
-
     var TaskList = Backbone.Collection.extend({
 	model: Task
-    });
-
-    var TimeEntries = Backbone.Collection.extend({
-	model: TimeEntry
     });
     
     var TaskView = Backbone.View.extend({
