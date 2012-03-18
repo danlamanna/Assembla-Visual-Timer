@@ -26,11 +26,11 @@ body {
     width:1000px;
 }
 
-#already-done {
+#log-container {
     float:right;
 }
 
-#already-done-inner {
+#log-inner {
     border:1px solid #ccc;
     width:300px;
     min-height:200px;

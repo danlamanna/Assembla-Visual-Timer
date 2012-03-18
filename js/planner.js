@@ -65,7 +65,10 @@
 	template: $('#task-template').html(),
 
 	render: function() {	   	    
-	    var tmpl = _.template("<%= title %> - <a href='#' class='do-task' data-ticket-id='<%= ticket_id %>' data-model-id='<%= id %>'>Do</a>");
+	    var tmpl = _.template("<%= title %>");
+
+	    // Narsty, has to be a way to do this with attributes {}
+	    $(this.el).attr('data-task-id', this.model.get('id'));
 
 	    $(this.el).html(tmpl(this.model.toJSON()));
 	    
@@ -98,11 +101,6 @@
     });
 
     var tasks = new TaskListView();
-
-    // Nasty, can't figure out how to get model attrs in view attributes param
-    $('.single-task').each(function() {
-	$(this).attr('data-task-id', $(this).find('a:first-child').data('model-id'));
-    });
 
     $('.single-task').draggable({
 	containment: 'body',
